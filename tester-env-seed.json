@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "app": "livebook",
+  "requirements": {
+    "seeded-notebook-library": {
+      "status": "present",
+      "evidence": "Three local .livemd notebooks appear in the Open storage browser: Weekly Delivery Review, Release Readiness, and Incident Follow-up."
+    },
+    "built-in-elixir-notebook": {
+      "status": "present",
+      "evidence": "Each seeded notebook has deterministic standard-library Elixir code that can be evaluated without Mix dependencies."
+    }
+  }
+}

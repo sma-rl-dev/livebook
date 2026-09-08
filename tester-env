@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+RUN_ID="default"
+PORT="18082"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${SCRIPT_DIR}/docker-compose.tester-env.yml"
+
+refresh_names() {
+  local suffix=""
+  [[ "${RUN_ID}" == "default" ]] || suffix="-${RUN_ID}"
+  PROJECT_NAME="tester-env-livebook${suffix}"
+  IMAGE_NAME="${IMAGE_TAG:-tester-env-livebook:dev}"
+  IFRAME_PORT="$((PORT + 1))"
+}
+
+compose() {
+  IMAGE_NAME="${IMAGE_NAME}" PORT="${PORT}" IFRAME_PORT="${IFRAME_PORT}" \
+    docker compose --project-name "${PROJECT_NAME}" --file "${COMPOSE_FILE}" "$@"
+}
+
+cmd_deploy() {
+  echo "==> Building editable Livebook source..."
+  DOCKER_BUILDKIT=1 compose up --detach --build --force-recreate
+  echo "==> Waiting for Livebook..."
+  for _ in {1..60}; do
+    if curl --fail --silent --show-error "http://localhost:${PORT}/public/health" >/dev/null; then
+      echo "==> Ready: http://localhost:${PORT}"
+      return
+    fi
+    sleep 2
+  done
+  compose logs
+  return 1
+}
+
+cmd_reset() {
+  echo "==> Removing Livebook container and disposable data volume..."
+  compose down --volumes --remove-orphans
+}
+
+cmd_seed() {
+  echo "==> Seeding deterministic notebook fixtures..."
+  compose exec -T livebook sh -c 'rm -rf /data/notebooks && mkdir -p /data/notebooks'
+  for notebook in "${SCRIPT_DIR}"/tester-env-seed/*.livemd; do
+    compose cp "${notebook}" "livebook:/data/notebooks/$(basename "${notebook}")"
+  done
+}
+
+cmd_verify() {
+  echo "==> Verifying seeded notebook fixtures..."
+  curl --fail --silent --show-error "http://localhost:${PORT}/public/health" >/dev/null
+  compose exec -T livebook sh -c '
+    set -- /data/notebooks/*.livemd && test "$#" -eq 3 &&
+    test -s /data/notebooks/weekly-delivery-review.livemd &&
+      test -s /data/notebooks/release-readiness.livemd &&
+      test -s /data/notebooks/incident-follow-up.livemd
+  '
+  echo "==> Seed verified: 3 notebooks at /data/notebooks"
+}
+
+cmd_stop() { compose stop; }
+cmd_logs() { compose logs --follow; }
+cmd_status() { compose ps; }
+
+cmd_help() {
+  cat <<'EOF'
+Usage: ./tester-env <deploy|seed|verify|reset|stop|status|logs> [--run-id ID] [--port PORT]
+
+deploy  Build editable source and start Livebook.
+seed    Replace the local notebook folder with deterministic fixtures.
+verify  Check health and the three seeded notebook files.
+reset   Remove this run's container and disposable data volume.
+stop    Stop this run while preserving its data volume.
+status  Show this run's containers.
+logs    Follow this run's logs.
+
+Default URL: http://localhost:18082 (iframe endpoint: 18083)
+Credentials: password livebook-tester-password
+EOF
+}
+
+main() {
+  local command="${1:-help}"
+  shift || true
+  while (($#)); do
+    case "$1" in
+      --run-id) RUN_ID="$2"; shift 2 ;;
+      --port) PORT="$2"; shift 2 ;;
+      --help|-h) command="help"; shift ;;
+      *) echo "Unknown option: $1" >&2; return 1 ;;
+    esac
+  done
+  [[ "${RUN_ID}" =~ ^[a-zA-Z0-9_.-]+$ ]] || { echo "Invalid run id" >&2; return 1; }
+  [[ "${PORT}" =~ ^[0-9]+$ ]] || { echo "Invalid port" >&2; return 1; }
+  refresh_names
+  case "${command}" in
+    deploy) cmd_deploy ;;
+    seed) cmd_seed ;;
+    verify) cmd_verify ;;
+    reset) cmd_reset ;;
+    stop) cmd_stop ;;
+    status) cmd_status ;;
+    logs) cmd_logs ;;
+    help) cmd_help ;;
+    *) echo "Unknown command: ${command}" >&2; cmd_help; return 1 ;;
+  esac
+}
+
+main "$@"

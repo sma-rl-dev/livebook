@@ -1,0 +1,24 @@
+services:
+  livebook:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: hexpm/elixir:1.19.3-erlang-28.1.1-ubuntu-noble-20251013
+        VARIANT: default
+    image: ${IMAGE_NAME:-tester-env-livebook:dev}
+    command: sh -c 'mkdir -p /data/notebooks && exec /app/bin/server'
+    network_mode: bridge
+    ports:
+      - "${PORT:-18082}:8080"
+      - "${IFRAME_PORT:-18083}:8081"
+    environment:
+      LIVEBOOK_PASSWORD: livebook-tester-password
+      LIVEBOOK_SECRET_KEY_BASE: livebook-tester-secret-key-base-0123456789abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      LIVEBOOK_TOKEN_ENABLED: "false"
+      LIVEBOOK_DATA_PATH: /data
+      LIVEBOOK_HOME: /data/notebooks
+    volumes:
+      - livebook-data:/data
+
+volumes:
+  livebook-data:

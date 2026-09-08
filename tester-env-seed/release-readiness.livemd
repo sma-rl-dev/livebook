@@ -1,0 +1,18 @@
+# Release Readiness
+
+## August release checklist
+
+| Area | Status | Owner |
+| --- | --- | --- |
+| Accounts API | Ready | Maya Chen |
+| Billing Worker | Ready | Omar Patel |
+| Customer Portal | In review | Elena Rossi |
+
+```elixir
+checklist = %{ready: 2, in_review: 1, blocked: 0}
+checklist.ready + checklist.in_review + checklist.blocked
+```
+
+## Next step
+
+Elena will complete the Customer Portal review before the fixed release date of 2026-08-07.

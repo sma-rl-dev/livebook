@@ -1,0 +1,14 @@
+# Incident Follow-up
+
+## Queue delay review — 2026-07-28
+
+The Billing Worker queue delay was resolved after capacity was increased. No customer data was lost.
+
+```elixir
+incident = %{status: :resolved, delayed_jobs: 14, customer_impact: "none"}
+{incident.status, incident.delayed_jobs, incident.customer_impact}
+```
+
+## Follow-up
+
+Keep the capacity alert enabled and review queue depth every Monday.

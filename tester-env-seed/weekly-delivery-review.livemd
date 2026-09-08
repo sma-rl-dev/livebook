@@ -1,0 +1,14 @@
+# Weekly Delivery Review
+
+## Release snapshot — 2026-08-03
+
+The Platform team reviewed the fixed August release plan. Three services are ready for rollout and one documentation task remains.
+
+```elixir
+services = ["Accounts API", "Billing Worker", "Customer Portal"]
+{length(services), Enum.join(services, ", ")}
+```
+
+## Decision
+
+Schedule the production release after the documentation checklist is complete.
