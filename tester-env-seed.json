@@ -4,11 +4,15 @@
   "requirements": {
     "seeded-notebook-library": {
       "status": "present",
-      "evidence": "Three local .livemd notebooks appear in the Open storage browser: Weekly Delivery Review, Release Readiness, and Incident Follow-up."
+      "evidence": "Four local .livemd notebooks appear in the Open storage browser: Weekly Delivery Review, Release Readiness, Incident Follow-up, and nested-tabs-check."
     },
     "built-in-elixir-notebook": {
       "status": "present",
       "evidence": "Each seeded notebook has deterministic standard-library Elixir code that can be evaluated without Mix dependencies."
+    },
+    "nested-tabs-notebook": {
+      "status": "present",
+      "evidence": "Seeded notebook nested-tabs-check.livemd renders nested Kino.Layout.tabs: outer Alpha/Beta with inner One/Two inside Alpha, distinct literal content per tab."
     }
   }
 }
