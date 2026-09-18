@@ -51,13 +51,15 @@ cmd_verify() {
   echo "==> Verifying seeded notebook fixtures..."
   curl --fail --silent --show-error "http://localhost:${PORT}/public/health" >/dev/null
   compose exec -T livebook sh -c '
-    set -- /data/notebooks/*.livemd && test "$#" -eq 4 &&
+    set -- /data/notebooks/*.livemd && test "$#" -eq 6 &&
     test -s /data/notebooks/weekly-delivery-review.livemd &&
       test -s /data/notebooks/release-readiness.livemd &&
       test -s /data/notebooks/incident-follow-up.livemd &&
-      test -s /data/notebooks/nested-tabs-check.livemd
+      test -s /data/notebooks/nested-tabs-check.livemd &&
+      test -s /data/notebooks/form-change-check.livemd &&
+      test -s /data/notebooks/number-limits-check.livemd
   '
-  echo "==> Seed verified: 4 notebooks at /data/notebooks"
+  echo "==> Seed verified: 6 notebooks at /data/notebooks"
 }
 
 cmd_stop() { compose stop; }
@@ -70,7 +72,7 @@ Usage: ./tester-env <deploy|seed|verify|reset|stop|status|logs> [--run-id ID] [-
 
 deploy  Build editable source and start Livebook.
 seed    Replace the local notebook folder with deterministic fixtures.
-verify  Check health and the four seeded notebook files.
+verify  Check health and the six seeded notebook files.
 reset   Remove this run's container and disposable data volume.
 stop    Stop this run while preserving its data volume.
 status  Show this run's containers.

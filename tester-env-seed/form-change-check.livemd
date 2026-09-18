@@ -1,0 +1,67 @@
+# Form Change Check
+
+## Setup
+
+Evaluate this cell first to install Kino.
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.19.0"}
+])
+```
+
+## Preferences form
+
+Evaluate this cell after setup. It renders a preferences form with live change reporting.
+
+```elixir
+form =
+  Kino.Control.form(
+    [
+      display_name: Kino.Input.text("Display name", default: "Ada"),
+      team:
+        Kino.Input.select("Team",
+          accounts_api: "Accounts API",
+          billing_worker: "Billing Worker",
+          customer_portal: "Customer Portal"
+        ),
+      notify: Kino.Input.checkbox("Notify on deploy", default: false),
+      page_size: Kino.Input.number("Items per page", default: 10)
+    ],
+    submit: "Save preferences",
+    report_changes: true
+  )
+
+Kino.render(form)
+```
+
+## Status output
+
+Evaluate this cell after the form cell. It shows a live status line below the form:
+"No changes yet." until the first edit, then a draft line per reported change
+and a saved line per submit.
+
+```elixir
+status = Kino.Frame.new()
+Kino.render(status)
+Kino.Frame.render(status, Kino.Markdown.new("No changes yet."))
+
+team_label = %{
+  accounts_api: "Accounts API",
+  billing_worker: "Billing Worker",
+  customer_portal: "Customer Portal"
+}
+
+format_summary = fn data ->
+  notify_text = if data.notify, do: "notifications on", else: "notifications off"
+  "#{data.display_name} | #{team_label[data.team]} | #{notify_text} | #{data.page_size} per page"
+end
+
+Kino.listen(form, fn
+  %{type: :change, data: data} ->
+    Kino.Frame.render(status, Kino.Markdown.new("Draft: " <> format_summary.(data)))
+
+  %{type: :submit, data: data} ->
+    Kino.Frame.render(status, Kino.Markdown.new("Saved: " <> format_summary.(data)))
+end)
+```

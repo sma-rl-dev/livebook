@@ -4,7 +4,7 @@
   "requirements": {
     "seeded-notebook-library": {
       "status": "present",
-      "evidence": "Four local .livemd notebooks appear in the Open storage browser: Weekly Delivery Review, Release Readiness, Incident Follow-up, and nested-tabs-check."
+      "evidence": "Six local .livemd notebooks appear in the Open storage browser: Weekly Delivery Review, Release Readiness, Incident Follow-up, nested-tabs-check, Form Change Check, and Number Limits Check."
     },
     "built-in-elixir-notebook": {
       "status": "present",
@@ -13,6 +13,22 @@
     "nested-tabs-notebook": {
       "status": "present",
       "evidence": "Seeded notebook nested-tabs-check.livemd renders nested Kino.Layout.tabs: outer Alpha/Beta with inner One/Two inside Alpha, distinct literal content per tab."
+    },
+    "mid-name-substring-notebooks": {
+      "status": "present",
+      "evidence": "Seeded fixture weekly-delivery-review.livemd is visible in the file picker; its name contains the substring 'delivery' after the first character."
+    },
+    "file-picker-notebook-selection": {
+      "status": "present",
+      "evidence": "Seeded fixtures weekly-delivery-review.livemd and incident-follow-up.livemd are visible and selectable in the home file picker; incident-follow-up.livemd contains an evaluable queue delay review cell."
+    },
+    "form-change-report-notebook": {
+      "status": "present",
+      "evidence": "Seeded notebook form-change-check.livemd renders a preferences form (display name default Ada, team select, notify checkbox, items-per-page default 10) with report_changes and submit, plus a status output showing 'No changes yet.' until the first edit, then Draft lines per change and Saved lines per submit."
+    },
+    "number-limits-notebook": {
+      "status": "present",
+      "evidence": "Seeded notebook number-limits-check.livemd renders an order form with a quantity number input (min 1, max 10, step 1, default 5) with report_changes and submit, plus a status output showing 'No changes yet.' until the first edit, then 'Draft: quantity N' lines per change and 'Saved: quantity N' lines per submit."
     }
   }
 }

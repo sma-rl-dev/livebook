@@ -1,0 +1,49 @@
+# Number Limits Check
+
+## Setup
+
+Evaluate this cell first to install Kino.
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.19.0"}
+])
+```
+
+## Order form
+
+Evaluate this cell after setup. It renders an order form with a quantity
+number input constrained to 1-10 (step 1, default 5) and live change reporting.
+
+```elixir
+form =
+  Kino.Control.form(
+    [
+      quantity: Kino.Input.number("Quantity", min: 1, max: 10, step: 1, default: 5)
+    ],
+    submit: "Submit order",
+    report_changes: true
+  )
+
+Kino.render(form)
+```
+
+## Status output
+
+Evaluate this cell after the form cell. It shows a live status line below the form:
+"No changes yet." until the first edit, then a draft line per reported change
+and a saved line per submit.
+
+```elixir
+status = Kino.Frame.new()
+Kino.render(status)
+Kino.Frame.render(status, Kino.Markdown.new("No changes yet."))
+
+Kino.listen(form, fn
+  %{type: :change, data: data} ->
+    Kino.Frame.render(status, Kino.Markdown.new("Draft: quantity #{data.quantity}"))
+
+  %{type: :submit, data: data} ->
+    Kino.Frame.render(status, Kino.Markdown.new("Saved: quantity #{data.quantity}"))
+end)
+```
