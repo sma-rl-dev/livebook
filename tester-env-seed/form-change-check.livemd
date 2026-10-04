@@ -12,7 +12,7 @@ Mix.install([
 
 ## Preferences form
 
-Evaluate this cell after setup. It renders a preferences form with live change reporting.
+Evaluate this cell after setup. It prepares a preferences form with live change reporting.
 
 ```elixir
 form =
@@ -32,7 +32,7 @@ form =
     report_changes: true
   )
 
-Kino.render(form)
+:ok
 ```
 
 ## Status output
@@ -43,7 +43,6 @@ and a saved line per submit.
 
 ```elixir
 status = Kino.Frame.new()
-Kino.render(status)
 Kino.Frame.render(status, Kino.Markdown.new("No changes yet."))
 
 team_label = %{
@@ -64,4 +63,8 @@ Kino.listen(form, fn
   %{type: :submit, data: data} ->
     Kino.Frame.render(status, Kino.Markdown.new("Saved: " <> format_summary.(data)))
 end)
+
+Kino.render(form)
+Kino.render(status)
+:ok
 ```
