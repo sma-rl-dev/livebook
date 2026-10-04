@@ -8,7 +8,7 @@
     },
     "built-in-elixir-notebook": {
       "status": "present",
-      "evidence": "Each seeded notebook has deterministic standard-library Elixir code that can be evaluated without Mix dependencies."
+      "evidence": "Weekly Delivery Review, Release Readiness, and Incident Follow-up use deterministic standard-library Elixir code without Mix dependencies. The nested-tabs, form-change, and number-limits notebooks instead install Kino (~> 0.19.0) during setup evaluation."
     },
     "nested-tabs-notebook": {
       "status": "present",
